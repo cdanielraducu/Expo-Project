@@ -7,14 +7,21 @@ import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
 import { UserInfo } from "./models";
 import { onAuthenticate } from "./api";
+import { useDispatch, useSelector } from "react-redux";
+import { onLogin } from "./redux/userSlice";
+import { RootState } from "./redux/store";
 
 WebBrowser.maybeCompleteAuthSession();
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, "Home">;
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
+  const dispatch = useDispatch();
+
+  const user = useSelector((state: RootState) => state.user.user);
+
   const [accessToken, setAccessToken] = React.useState<string>("");
-  const [userInfo, setUserInfo] = React.useState<UserInfo | undefined>();
+  const [userInfo, setUserInfo] = React.useState<UserInfo | undefined>(user);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     expoClientId:
@@ -27,6 +34,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   const onAuthenticateSuccess = (data: UserInfo) => {
     setUserInfo(data);
+    dispatch(onLogin({ ...data }));
   };
 
   React.useEffect(() => {
