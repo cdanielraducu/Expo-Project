@@ -3,7 +3,7 @@ import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
 import { UserInfo } from "./models";
 import { useDispatch, useSelector } from "react-redux";
-import { onLogin } from "../redux/userSlice";
+import { onLogin, onLogout } from "../redux/userSlice";
 import { onAuthenticate } from "../api/user";
 import { RootState } from "../redux/store";
 
@@ -45,10 +45,16 @@ export const useAuthUser = () => {
     await promptAsync();
   };
 
-  const onLogout = () => {
+  const onLogoutCallback = () => {
     setAccessToken("");
     setUserInfo(undefined);
+    dispatch(onLogout());
   };
 
-  return { userInfo, onLogin: onLoginCallback, onLogout, isLoading: !request };
+  return {
+    userInfo,
+    onLogin: onLoginCallback,
+    onLogout: onLogoutCallback,
+    isLoading: !request,
+  };
 };

@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React from "react";
+import React, { useMemo } from "react";
 import { StyleSheet, ScrollView, View } from "react-native";
 import { Button, Card, DefaultTheme, Text } from "react-native-paper";
 import { RootStackParamList } from "./utils/types";
@@ -15,12 +15,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   const { userInfo, onLogin, onLogout, isLoading } = useAuthUser();
 
+  const isLoggedIn = useMemo(() => userInfo, [userInfo]);
+
   return (
     <ScrollView style={styles.scrollView}>
       <Card style={styles.card}>
         {userInfo && <UserInfoContent userInfo={userInfo} />}
         <Card.Content>
-          {!userInfo && (
+          {!isLoggedIn && (
             <Button mode="contained" disabled={isLoading} onPress={onLogin}>
               Login
             </Button>
@@ -32,7 +34,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           >
             Navigate to user
           </Button>
-          {userInfo && (
+          {isLoggedIn && (
             <Button
               mode="contained"
               onPress={onLogout}
