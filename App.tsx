@@ -3,8 +3,8 @@ import { Provider as PaperProvider } from "react-native-paper";
 import { Provider as ReduxProvider } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
 import HomeScreen from "./src/HomeScreen";
-import BookScreen from "./src/BookScreen";
-import { RootStackParamList } from "./src/types";
+import UserScreen from "./src/UserScreen";
+import { RootStackParamList } from "./src/utils/types";
 import { store, persistor } from "./src/redux/store";
 import { PersistGate } from "redux-persist/integration/react";
 
@@ -19,9 +19,9 @@ export default function App() {
             <Stack.Navigator>
               <Stack.Screen name="Home" component={HomeScreen} />
               <Stack.Screen
-                name="Book"
-                component={BookScreen}
-                options={({ route }) => ({ title: route.params.name })}
+                name="User"
+                options={{ title: "" }}
+                component={UserScreen}
               />
             </Stack.Navigator>
           </NavigationContainer>

@@ -2,21 +2,23 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Card, DefaultTheme } from "react-native-paper";
-import { RootStackParamList } from "./types";
+import { useSelector } from "react-redux";
+import UserInfoContent from "./components/UserInfoContent";
+import { RootState } from "./redux/store";
+import { RootStackParamList } from "./utils/types";
 
-export interface BookProps {
-  name: string;
-}
+export interface UserScreenProps {}
 
-type BookScreenProps = NativeStackScreenProps<RootStackParamList, "Book">;
+type UserScreenTypeProps = NativeStackScreenProps<RootStackParamList, "User">;
 
-const BookScreen: React.FC<BookScreenProps> = ({ route }) => {
-  const { name } = route.params;
+const BookScreen: React.FC<UserScreenTypeProps> = ({ route }) => {
+  const { user: userInfo } = useSelector((state: RootState) => state.user);
 
   return (
     <View style={styles.container}>
       <Card style={styles.card}>
-        <Card.Title title={`This is the ${name} title`} />
+        <Card.Title title={`User Information`} />
+        {userInfo && <UserInfoContent userInfo={userInfo} showExtraDetails />}
       </Card>
     </View>
   );

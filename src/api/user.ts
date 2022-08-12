@@ -1,4 +1,4 @@
-import { UserInfo } from "./models";
+import { UserInfo } from "../utils/models";
 
 export const onAuthenticate = ({
   token,

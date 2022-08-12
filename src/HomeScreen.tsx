@@ -2,92 +2,37 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
 import { StyleSheet, ScrollView, View } from "react-native";
 import { Button, Card, DefaultTheme, Text } from "react-native-paper";
-import { RootStackParamList } from "./types";
-import * as Google from "expo-auth-session/providers/google";
-import * as WebBrowser from "expo-web-browser";
-import { UserInfo } from "./models";
-import { onAuthenticate } from "./api";
-import { useDispatch, useSelector } from "react-redux";
-import { onLogin } from "./redux/userSlice";
-import { RootState } from "./redux/store";
-
-WebBrowser.maybeCompleteAuthSession();
+import { RootStackParamList } from "./utils/types";
+import UserInfoContent from "./components/UserInfoContent";
+import { useAuthUser } from "./utils/useAuthUser";
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, "Home">;
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch();
-
-  const user = useSelector((state: RootState) => state.user.user);
-
-  const [accessToken, setAccessToken] = React.useState<string>("");
-  const [userInfo, setUserInfo] = React.useState<UserInfo | undefined>(user);
-
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId:
-      "855471579042-1v01inf3d9l007jruvjn8sn544c07m4k.apps.googleusercontent.com",
-    androidClientId:
-      "855471579042-jiun4ciql9mnqpjdvokvnp7dq4c5u240.apps.googleusercontent.com",
-    iosClientId:
-      "855471579042-9bv12414ivk92ak8viarvud8eaae1o9i.apps.googleusercontent.com",
-  });
-
-  const onAuthenticateSuccess = (data: UserInfo) => {
-    setUserInfo(data);
-    dispatch(onLogin({ ...data }));
+  const onNavigateToUserInfo = () => {
+    navigation.navigate("User", {});
   };
 
-  React.useEffect(() => {
-    if (response?.type === "success") {
-      setAccessToken(response.authentication?.accessToken ?? "");
-      onAuthenticate({
-        token: response.authentication?.accessToken ?? "",
-        onSuccess: onAuthenticateSuccess,
-      });
-    }
-  }, [response]);
-
-  const getUserData = async () => {
-    onAuthenticate({
-      token: accessToken,
-      onSuccess: onAuthenticateSuccess,
-    });
-  };
-
-  const onLogout = () => {
-    setAccessToken("");
-    setUserInfo(undefined);
-  };
-
-  const userDataElement = userInfo && (
-    <Card>
-      <Card.Content style={styles.card}>
-        <Card.Cover source={{ uri: userInfo.picture }} style={styles.cover} />
-        <View style={styles.welcomeTextContainer}>
-          <Text style={[styles.text, styles.nameText]}>
-            Hi, {userInfo.name}!
-          </Text>
-          <Text style={[styles.text, styles.infoText]}>
-            Email: {userInfo.email}
-          </Text>
-        </View>
-      </Card.Content>
-    </Card>
-  );
+  const { userInfo, onLogin, onLogout, isLoading } = useAuthUser();
 
   return (
     <ScrollView style={styles.scrollView}>
       <Card style={styles.card}>
-        {userDataElement}
+        {userInfo && <UserInfoContent userInfo={userInfo} />}
         <Card.Content>
+          {!userInfo && (
+            <Button mode="contained" disabled={isLoading} onPress={onLogin}>
+              Login
+            </Button>
+          )}
           <Button
             mode="contained"
-            disabled={!request}
-            onPress={accessToken ? getUserData : () => promptAsync()}
+            onPress={onNavigateToUserInfo}
+            style={styles.logoutButton}
           >
-            {`${accessToken ? "Get user info" : "Login"}`}
+            Navigate to user
           </Button>
-          {accessToken && (
+          {userInfo && (
             <Button
               mode="contained"
               onPress={onLogout}
@@ -113,26 +58,6 @@ const styles = StyleSheet.create({
     marginRight: "auto",
     marginTop: 8,
     flexDirection: "row",
-  },
-  welcomeTextContainer: {
-    marginTop: 8,
-  },
-  text: {
-    color: DefaultTheme.colors.text,
-  },
-  nameText: {
-    fontSize: 16,
-    lineHeight: 18,
-  },
-  infoText: {
-    fontSize: 14,
-    lineHeight: 16,
-  },
-  cover: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 16,
   },
   logoutButton: {
     marginTop: 8,
