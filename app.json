@@ -17,14 +17,25 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    
+    "scheme": "project",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "project.expo.googlesignin",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "855471579042-9bv12414ivk92ak8viarvud8eaae1o9i.apps.googleusercontent.com"
+        }
+      },
+      "googleServiceFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "project.expo.googlesignin",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
